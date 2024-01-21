@@ -5,7 +5,8 @@ import { RowDataPacket } from 'mysql2';
 import authConfig from '../configs/auth.config';
 
 export type AuthPayload = { username: string };
-export type AuthRequest = Request & { [k in keyof AuthPayload]?: AuthPayload[k] };
+
+type AuthRequest = Request & { [k in keyof AuthPayload]?: AuthPayload[k] };
 
 export async function authenticateToken(request: AuthRequest, response: Response, next: NextFunction) {
     const tokenCookie: string = request.cookies['access-token']

@@ -2,11 +2,10 @@ import jsonwebtoken from 'jsonwebtoken';
 
 import { sha256 } from 'hash.js';
 import { generate } from 'generate-password';
-import { ResponsePayload } from '../types';
 import { pool } from './database.service';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
-import { AuthPayload } from '../middleware/auth.middleware';
 import authConfig from '../configs/auth.config';
+import { AuthPayload } from '../middleware/auth.middleware';
 
 function generatePassword(): string {
     return generate({
