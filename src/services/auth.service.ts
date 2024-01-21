@@ -28,9 +28,11 @@ function hashPassword(password: string, salt: string): string {
     return sha256().update(password + salt).digest('hex');
 }
 
-async function login(username: string, password: string): Promise<
-    { token: string, requireUpdatePassword: boolean }
-    | 'user not found' | 'incorrect password'> {
+async function login(username: string, password: string)
+    : Promise<
+        { token: string, requireUpdatePassword: boolean }
+        | 'user not found' | 'incorrect password'
+    > {
     const [userRows] = await pool.execute<RowDataPacket[]>(`
         SELECT pw_salt, pw_hash, req_update_pw
         FROM user WHERE user.username=?`,
@@ -54,8 +56,8 @@ async function login(username: string, password: string): Promise<
     return { token, requireUpdatePassword };
 }
 
-async function resetPassword(username: string): Promise<
-    { password: string } | 'user not found'> {
+async function resetPassword(username: string)
+    : Promise<{ password: string } | 'user not found'> {
     const password = generatePassword();
     const salt = generateSalt();
     const hash = hashPassword(password, salt);

@@ -4,9 +4,7 @@ import { authenticateToken, requireClearance } from "../middleware/auth.middlewa
 
 const router = Router();
 
-router.post('/', requireClearance(2), usersController.createUser);
-router.get('/me', authenticateToken, usersController.getSelfUser);
-//router.get('/me/word-progress', authenticateToken, usersController.getWordProgress);
-//router.post('/me/word-progress', authenticateToken, usersController.postWordProgress);
+router.post('/', requireClearance(2), usersController.create);
+router.get('/me', authenticateToken, usersController.getSelf);
 
 export default { router };

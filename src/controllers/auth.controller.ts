@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import { AuthRequest } from "../middleware/auth.middleware";
 import authService from '../services/auth.service';
 
-async function login(request: Request, response: Response) {
+async function login(
+    request: Request<{}, {}, { username: string; password: string }, {}>,
+    response: Response,
+) {
     const { username, password } = request.body;
 
     if (!username || !password)
@@ -32,7 +34,10 @@ function logout(_request: Request, response: Response) {
     return response.clearCookie('access-token').sendStatus(204);
 }
 
-async function resetPassword(request: Request, response: Response) {
+async function resetPassword(
+    request: Request<{}, {}, { username: string }, {}>,
+    response: Response,
+) {
     const { username } = request.body;
 
     if (!username) return response.status(400).json({ message: 'Please provide: username' });
@@ -49,7 +54,10 @@ async function resetPassword(request: Request, response: Response) {
     }
 }
 
-async function updatePassword(request: AuthRequest, response: Response) {
+async function updatePassword(
+    request: Request<{}, {}, { currentPassword: string, newPassword: string }, {}> & { username: string },
+    response: Response,
+) {
     const { currentPassword, newPassword } = request.body;
 
     if (!currentPassword || !newPassword)

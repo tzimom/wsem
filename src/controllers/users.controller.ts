@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import usersService from "../services/users.service";
 import User from "../models/user.model";
-import { AuthRequest } from "../middleware/auth.middleware";
 
-async function createUser(request: Request, response: Response) {
+async function create(
+    request: Request<{}, {}, { username: string; firstname: string; lastname: string; classname: string }, {}>,
+    response: Response,
+) {
     const { username, firstname, lastname, classname } = request.body;
 
     if (!username || !firstname || !lastname || !classname)
@@ -12,7 +14,7 @@ async function createUser(request: Request, response: Response) {
     const user: User = { username, firstname, lastname, classname };
 
     try {
-        const result = await usersService.createUser(user);
+        const result = await usersService.create(user);
 
         if (result === 'already exists')
             return response.status(409).json({ message: 'User already exists' });
@@ -23,11 +25,14 @@ async function createUser(request: Request, response: Response) {
     }
 }
 
-async function getSelfUser(request: AuthRequest, response: Response) {
+async function getSelf(
+    request: Request & {username: string},
+    response: Response,
+) {
     const { username } = request;
 
     try {
-        const result = await usersService.getUser(username);
+        const result = await usersService.getByUsername(username);
 
         if (result === 'not found')
             return response.status(404).json({ message: 'User does not exist' });
@@ -38,28 +43,4 @@ async function getSelfUser(request: AuthRequest, response: Response) {
     }
 }
 
-/*
-async function getWordProgress(request: AuthRequest, response: Response) {
-    const { wordId } = request.body;
-
-    if (!wordId)
-        return response.status(400).json({ message: 'You have to specify a wordId' });
-
-    const payload = await usersService.getWordProgress(request.username, wordId);
-
-    response.status(payload.statusCode).json(payload);
-}
-
-async function postWordProgress(request: AuthRequest, response: Response) {
-    const { wordId, typedWord } = request.body;
-
-    if (!wordId || !typedWord)
-        return response.status(400).json({ error: 'You have to specify a wordId and a typedWord' });
-
-    const payload = await usersService.postWordProgress(request.username, wordId, typedWord);
-
-    response.status(payload.statusCode).json(payload);
-}
-*/
-
-export default { getSelfUser, createUser };
+export default { getSelf, create };

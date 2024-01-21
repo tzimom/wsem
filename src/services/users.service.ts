@@ -1,9 +1,9 @@
 import { RowDataPacket } from 'mysql2';
-import User from '../models/user.model';
+import User, { userFromRow } from '../models/user.model';
 import { pool } from '../services/database.service';
 import authService from '../services/auth.service';
 
-async function getUser(username: string): Promise<User | 'not found'> {
+async function getByUsername(username: string): Promise<User | 'not found'> {
     const [userRows] = await pool.query<RowDataPacket[]>(`
         SELECT username, firstname, lastname, class
         FROM user_info
@@ -14,15 +14,10 @@ async function getUser(username: string): Promise<User | 'not found'> {
     if (userRows.length === 0) return 'not found';
     const userRow = userRows[0];
 
-    return {
-        username: userRow.username,
-        firstname: userRow.firstname,
-        lastname: userRow.lastname,
-        classname: userRow.class,
-    };
+    return userFromRow(userRow);
 }
 
-async function createUser(user: User): Promise<{ password: string } | 'already exists'> {
+async function create(user: User): Promise<{ password: string } | 'already exists'> {
     const password = authService.generatePassword();
     const salt = authService.generateSalt();
     const hash = authService.hashPassword(password, salt);
@@ -46,4 +41,4 @@ async function createUser(user: User): Promise<{ password: string } | 'already e
     }
 }
 
-export default { getUser, createUser };
+export default { getByUsername, create };
